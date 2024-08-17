@@ -52,18 +52,18 @@ export async function connect(): Promise<RpcTransport> {
     },
   });
 
-  let writableWithoutResponse = new WritableStream({
-    write(chunk) {
-      return char.writeValueWithoutResponse(chunk);
-    },
-  });
-
-  let writableWithResponse = new WritableStream({
-    write(chunk) {
-      return char.writeValueWithResponse(chunk);
-    },
-  });
-
   return { label, readable,
-           writable: char.properties.writeWithoutResponse ? writableWithoutResponse : writableWithResponse };
+    writable: char.properties.writeWithoutResponse ?
+    new WritableStream({
+      write(chunk) {
+        return char.writeValueWithoutResponse(chunk);
+      },
+    })
+    :
+    new WritableStream({
+      write(chunk) {
+        return char.writeValueWithResponse(chunk);
+      },
+    })
+  };
 }
